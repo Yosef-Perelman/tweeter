@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Text, Textarea, Stack, Flex, Button, Alert } from "@mantine/core";
 import "./Feed.css";
+import Tweet from "./Tweet";
 
 const STORAGE_KEY = "tweeter-tweets";
 
@@ -77,15 +78,7 @@ export default function Feed() {
       >
         {tweets.map((tweet, index) => (
           <div className="tweet" key={index}>
-            <Flex justify="space-between">
-              <Text c="dimmed" size="sm">
-                {tweet.username}
-              </Text>
-              <Text c="dimmed" size="sm">
-                {tweet.createdAt}
-              </Text>
-            </Flex>
-            <Text>{tweet.text}</Text>
+            <Tweet tweet={tweet} />
           </div>
         ))}
       </Stack>
