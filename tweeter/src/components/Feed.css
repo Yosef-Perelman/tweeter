@@ -1,0 +1,25 @@
+.feed {
+  width: 50%;
+  margin: 40px auto;
+}
+
+.addTweetContainer {
+  border: 1px solid var(--mantine-color-gray-5);
+  border-radius: var(--mantine-radius-md);
+  width: 100%;
+  padding: 16px;
+}
+
+.tweetsContainer {
+  width: 100%;
+}
+
+.tweet {
+  background-color: var(--mantine-color-dark-6);
+  border-radius: 0.5rem;
+  padding: 16px;
+}
+
+.add_tweet_button {
+  margin-right: 0;
+}
