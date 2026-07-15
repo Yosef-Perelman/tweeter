@@ -10,7 +10,7 @@ import { MantineProvider } from "@mantine/core";
 createRoot(document.getElementById("root")).render(
   <MantineProvider>
     <StrictMode>
-      <BrowserRouter>
+      <BrowserRouter basename="/tweeter">
         <App />
       </BrowserRouter>
     </StrictMode>

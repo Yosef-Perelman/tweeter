@@ -9,7 +9,7 @@ function App() {
     <TweetsProvider>
       <Navbar />
       <Routes>
-        <Route path="/tweeter/" element={<Feed />} />
+        <Route path="/" element={<Feed />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </TweetsProvider>
