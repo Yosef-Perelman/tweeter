@@ -1,60 +1,21 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Textarea, Stack, Flex, Button, Alert, Loader } from "@mantine/core";
 import "./Feed.css";
 import Tweet from "./Tweet";
-import { getUsername } from "../lib/username";
-import dummyData from "../data/dummyData.js";
-
-const NETWORK_DELAY = 2000;
-
-// stands in for a remote server's tweet storage
-let serverTweets = dummyData.map(({ userName, content, date }) => ({
-  username: userName,
-  text: content,
-  createdAt: date,
-}));
+import { useTweets } from "../context/TweetsContext";
 
 export default function Feed() {
-  const [tweets, setTweets] = useState([]);
+  const { tweets, loading, posting, error, addTweet } = useTweets();
   const [value, setValue] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [posting, setPosting] = useState(false);
-  const [error, setError] = useState("");
   const maxLength = 140;
-
-  useEffect(() => {
-    setTimeout(() => {
-      setTweets(serverTweets);
-      setLoading(false);
-    }, NETWORK_DELAY);
-  }, []);
 
   const isTooLong = value.length > maxLength;
   const canTweet = value.trim().length > 0 && !isTooLong && !loading && !posting;
 
-  const addTweet = () => {
+  const handleTweet = () => {
     if (!canTweet) return;
-
-    setPosting(true);
-    setError("");
-
-    setTimeout(() => {
-      if (!value.trim()) {
-        setError("Tweet can't be empty.");
-        setPosting(false);
-        return;
-      }
-
-      const tweet = {
-        username: getUsername(),
-        text: value,
-        createdAt: new Date().toISOString(),
-      };
-      serverTweets = [tweet, ...serverTweets];
-      setTweets(serverTweets);
-      setValue("");
-      setPosting(false);
-    }, NETWORK_DELAY);
+    addTweet(value);
+    setValue("");
   };
 
   return (
@@ -89,7 +50,7 @@ export default function Feed() {
           <Button
             className="add_tweet_button"
             variant="filled"
-            onClick={addTweet}
+            onClick={handleTweet}
             disabled={!canTweet}
             loading={posting}
             ml="auto"
