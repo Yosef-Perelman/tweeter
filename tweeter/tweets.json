@@ -1,0 +1,52 @@
+[
+  {
+    "content": "Just pushed my first commit to the new project. Feels good to start fresh.",
+    "userName": "yosef",
+    "date": "2024-01-05T09:12:00.000Z"
+  },
+  {
+    "content": "Coffee first, code second.",
+    "userName": "yosef",
+    "date": "2024-01-05T10:45:23.000Z"
+  },
+  {
+    "content": "Why does CSS centering still trip me up after all these years?",
+    "userName": "yosef",
+    "date": "2024-01-06T14:20:11.500Z"
+  },
+  {
+    "content": "Refactored the auth module today, deleted way more code than I wrote. Best kind of day.",
+    "userName": "yosef",
+    "date": "2024-01-07T08:03:47.000Z"
+  },
+  {
+    "content": "Anyone else excited about the new React compiler? Game changer for performance.",
+    "userName": "yosef",
+    "date": "2024-01-08T16:30:00.000Z"
+  },
+  {
+    "content": "TIL you can use structuredClone instead of JSON.parse(JSON.stringify()).",
+    "userName": "yosef",
+    "date": "2024-01-09T11:15:32.250Z"
+  },
+  {
+    "content": "Shipping a small feature every day beats one giant release every month.",
+    "userName": "yosef",
+    "date": "2024-01-10T13:00:00.000Z"
+  },
+  {
+    "content": "Debugging a race condition for three hours only to find a missing await. Classic.",
+    "userName": "yosef",
+    "date": "2024-01-11T19:42:18.000Z"
+  },
+  {
+    "content": "Really enjoying how Mantine handles theming out of the box.",
+    "userName": "yosef",
+    "date": "2024-01-12T07:55:05.000Z"
+  },
+  {
+    "content": "Weekend project: building a tiny Twitter clone just for fun. No backend yet, just local storage.",
+    "userName": "yosef",
+    "date": "2024-01-13T20:10:59.000Z"
+  }
+]

@@ -1,0 +1,19 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  gap: 24px;
+  padding: 20px 24px;
+  background-color: var(--mantine-color-dark-6);
+}
+
+.navLink {
+  color: var(--mantine-color-gray-6);
+  text-decoration: none;
+  font-size: var(--mantine-font-size-md);
+}
+
+.navLinkActive {
+  color: var(--mantine-color-white);
+}

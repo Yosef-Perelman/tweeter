@@ -1,38 +1,60 @@
-import { useState } from "react";
-import { Text, Textarea, Stack, Flex, Button, Alert } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { Textarea, Stack, Flex, Button, Alert, Loader } from "@mantine/core";
 import "./Feed.css";
 import Tweet from "./Tweet";
+import { getUsername } from "../lib/username";
+import dummyData from "../data/dummyData.js";
 
-const STORAGE_KEY = "tweeter-tweets";
+const NETWORK_DELAY = 2000;
 
-function loadTweets() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? [];
-  } catch {
-    return [];
-  }
-}
+// stands in for a remote server's tweet storage
+let serverTweets = dummyData.map(({ userName, content, date }) => ({
+  username: userName,
+  text: content,
+  createdAt: date,
+}));
 
 export default function Feed() {
-  const [tweets, setTweets] = useState(loadTweets);
+  const [tweets, setTweets] = useState([]);
   const [value, setValue] = useState("");
-  const userName = "yosef";
+  const [loading, setLoading] = useState(true);
+  const [posting, setPosting] = useState(false);
+  const [error, setError] = useState("");
   const maxLength = 140;
 
+  useEffect(() => {
+    setTimeout(() => {
+      setTweets(serverTweets);
+      setLoading(false);
+    }, NETWORK_DELAY);
+  }, []);
+
   const isTooLong = value.length > maxLength;
-  const canTweet = value.trim().length > 0 && !isTooLong;
+  const canTweet = value.trim().length > 0 && !isTooLong && !loading && !posting;
 
   const addTweet = () => {
     if (!canTweet) return;
 
-    const updated = [
-      { username: userName, text: value, createdAt: new Date().toISOString() },
-      ...tweets,
-    ];
+    setPosting(true);
+    setError("");
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    setTweets(updated);
-    setValue("");
+    setTimeout(() => {
+      if (!value.trim()) {
+        setError("Tweet can't be empty.");
+        setPosting(false);
+        return;
+      }
+
+      const tweet = {
+        username: getUsername(),
+        text: value,
+        createdAt: new Date().toISOString(),
+      };
+      serverTweets = [tweet, ...serverTweets];
+      setTweets(serverTweets);
+      setValue("");
+      setPosting(false);
+    }, NETWORK_DELAY);
   };
 
   return (
@@ -59,29 +81,39 @@ export default function Feed() {
               The tweet can't contain more then {maxLength} chars.
             </Alert>
           )}
+          {error && (
+            <Alert color="red" variant="light" py={6}>
+              {error}
+            </Alert>
+          )}
           <Button
             className="add_tweet_button"
             variant="filled"
             onClick={addTweet}
             disabled={!canTweet}
+            loading={posting}
             ml="auto"
           >
             Tweet
           </Button>
         </Flex>
       </div>
-      <Stack
-        align="stretch"
-        justify="center"
-        gap="md"
-        className="tweetsContainer"
-      >
-        {tweets.map((tweet, index) => (
-          <div className="tweet" key={index}>
-            <Tweet tweet={tweet} />
-          </div>
-        ))}
-      </Stack>
+      {loading ? (
+        <Loader />
+      ) : (
+        <Stack
+          align="stretch"
+          justify="center"
+          gap="md"
+          className="tweetsContainer"
+        >
+          {tweets.map((tweet, index) => (
+            <div className="tweet" key={index}>
+              <Tweet tweet={tweet} />
+            </div>
+          ))}
+        </Stack>
+      )}
     </Flex>
   );
 }
