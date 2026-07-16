@@ -1,16 +1,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getUsername } from "../lib/username";
-import dummyData from "../data/dummyData.js";
+import { supabase } from "../lib/supabaseClient";
 
-const NETWORK_DELAY = 2000;
 const POLL_INTERVAL = 5000;
 
-// stands in for a remote server's tweet storage
-let serverTweets = dummyData.map(({ userName, content, date }) => ({
-  username: userName,
-  text: content,
-  createdAt: date,
-}));
+function rowToTweet(row) {
+  return {
+    username: row.userName,
+    text: row.content,
+    createdAt: row.date,
+  };
+}
 
 function tweetKey(tweet) {
   return `${tweet.username}__${tweet.createdAt}`;
@@ -30,38 +30,73 @@ export function TweetsProvider({ children }) {
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState("");
 
+  const fetchTweets = async () => {
+    const { data, error: fetchError } = await supabase
+      .from("Tweets")
+      .select("*")
+      .order("date", { ascending: false });
+
+    if (fetchError) {
+      return { tweets: null, error: fetchError };
+    }
+    return { tweets: data.map(rowToTweet), error: null };
+  };
+
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setTweets(serverTweets);
+    let cancelled = false;
+
+    (async () => {
+      const { tweets: fetched, error: fetchError } = await fetchTweets();
+      if (cancelled) return;
+      if (fetchError) {
+        setError("Failed to load tweets.");
+      } else {
+        setTweets(fetched);
+      }
       setLoading(false);
-    }, NETWORK_DELAY);
-    return () => clearTimeout(timeout);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
     if (loading) return;
-    const interval = setInterval(() => {
-      setTweets((current) => mergeServerTweets(current, serverTweets));
+    const interval = setInterval(async () => {
+      const { tweets: fetched, error: fetchError } = await fetchTweets();
+      if (!fetchError) {
+        setTweets((current) => mergeServerTweets(current, fetched));
+      }
     }, POLL_INTERVAL);
     return () => clearInterval(interval);
   }, [loading]);
 
-  const addTweet = (text) => {
+  const addTweet = async (text) => {
     if (!text.trim()) return;
 
     setPosting(true);
     setError("");
 
-    setTimeout(() => {
-      const tweet = {
-        username: getUsername(),
-        text,
-        createdAt: new Date().toISOString(),
-      };
-      serverTweets = [tweet, ...serverTweets];
-      setTweets((current) => [tweet, ...current]);
+    const tweet = {
+      userName: getUsername(),
+      content: text,
+      date: new Date().toISOString(),
+    };
+
+    const { data, error: insertError } = await supabase
+      .from("Tweets")
+      .insert(tweet)
+      .select();
+
+    if (insertError) {
+      setError("Failed to post tweet.");
       setPosting(false);
-    }, NETWORK_DELAY);
+      return;
+    }
+
+    setTweets((current) => [rowToTweet(data[0]), ...current]);
+    setPosting(false);
   };
 
   const value = { tweets, loading, posting, error, addTweet };
