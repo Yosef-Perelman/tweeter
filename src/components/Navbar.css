@@ -17,3 +17,7 @@
 .navLinkActive {
   color: var(--mantine-color-white);
 }
+
+.navbarSpacer {
+  margin-left: auto;
+}
